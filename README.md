@@ -1,1 +1,0 @@
-# WorldUniversityRankings_sj_vb
