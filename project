@@ -1,0 +1,392 @@
+using DataFrames, LowRankModels, PyPlot
+
+s_dt = readtable("s_dt.csv")
+d_st = readtable("d_st.csv")
+t_sd = readtable("t_sd.csv")
+
+obj = Float64[]
+for k in 1:45
+  glrms = GLRM(s_dt[2:length(s_dt[1,:])], QuadLoss(), ZeroReg(), ZeroReg(), k, obs=obss)
+  Xs,Ys,chs = fit!(glrms)
+  push!(obj,chs.objective[length(chs.objective)])
+end
+
+plot(obj)
+
+objd = Float64[]
+for k in 1:50
+  glrmd = GLRM(d_st[2:length(d_st[1,:])], QuadLoss(), ZeroReg(), ZeroReg(), k, obs=obsd)
+  Xd,Yd,chd = fit!(glrmd)
+  push!(objd,chd.objective[length(chd.objective)])
+end
+
+plot(objd)
+
+#pca
+obss = observations(s_dt[2:length(s_dt[1,:])])
+glrms = GLRM(s_dt[2:length(s_dt[1,:])], QuadLoss(), ZeroReg(), ZeroReg(), 45, obs=obss)
+Xs,Ys,chs = fit!(glrms)
+smooths = DataFrame(s1 = Float64[], s2 = Float64[], s3 = Float64[], s4 = Float64[], s5 = Float64[], s6 = Float64[], s7 = Float64[], s8 = Float64[], s9 = Float64[],
+                    s10 = Float64[], s11 = Float64[], s12 = Float64[], s13 = Float64[], s14 = Float64[], s15 = Float64[], s16 = Float64[], s17 = Float64[], s18 = Float64[],
+                    s19 = Float64[], s20 = Float64[], s21 = Float64[], s22 = Float64[], s23 = Float64[], s24 = Float64[], s25 = Float64[], s26 = Float64[], s27 = Float64[],
+                    s28 = Float64[], s29 = Float64[], s30 = Float64[], s31 = Float64[], s32 = Float64[], s33 = Float64[], s34 = Float64[], s35 = Float64[], s36 = Float64[],
+                    s37 = Float64[], s38 = Float64[], s39 = Float64[], s40 = Float64[], s41 = Float64[], s42 = Float64[], s43 = Float64[], s44 = Float64[], s45 = Float64[])
+alpha = 1/1000000
+for i in 1:45
+  new = Float64[]
+  for j in 1:45
+    push!(new, exp(-alpha*sum((Xs[:,i]-Xs[:,j]).^2)))
+  end
+  push!(smooths, new)
+end
+smooths
+Xs = DataFrame(Xs)
+
+writetable("Xs_pca.csv", Xs)
+writetable("Xs_pca_ls.csv", smooths)
+
+obsd = observations(d_st[2:length(d_st[1,:])])
+glrmd = GLRM(d_st[2:length(d_st[1,:])], QuadLoss(), ZeroReg(), ZeroReg(), 81, obs=obsd)
+Xd,Yd,chd = fit!(glrmd)
+smoothd = DataFrame(d1 = Float64[], d2 = Float64[], d3 = Float64[], d4 = Float64[], d5 = Float64[], d6 = Float64[], d7 = Float64[], d8 = Float64[], d9 = Float64[],
+                    d10 = Float64[], d11 = Float64[], d12 = Float64[], d13 = Float64[], d14 = Float64[], d15 = Float64[], d16 = Float64[], d17 = Float64[], d18 = Float64[],
+                    d19 = Float64[], d20 = Float64[], d21 = Float64[], d22 = Float64[], d23 = Float64[], d24 = Float64[], d25 = Float64[], d26 = Float64[], d27 = Float64[],
+                    d28 = Float64[], d29 = Float64[], d30 = Float64[], d31 = Float64[], d32 = Float64[], d33 = Float64[], d34 = Float64[], d35 = Float64[], d36 = Float64[],
+                    d37 = Float64[], d38 = Float64[], d39 = Float64[], d40 = Float64[], d41 = Float64[], d42 = Float64[], d43 = Float64[], d44 = Float64[], d45 = Float64[],
+                    d46 = Float64[], d47 = Float64[], d48 = Float64[], d49 = Float64[], d50 = Float64[], d51 = Float64[], d52 = Float64[], d53 = Float64[], d54 = Float64[],
+                    d55 = Float64[], d56 = Float64[], d57 = Float64[], d58 = Float64[], d59 = Float64[], d60 = Float64[], d61 = Float64[], d62 = Float64[], d63 = Float64[],
+                    d64 = Float64[], d65 = Float64[], d66 = Float64[], d67 = Float64[], d68 = Float64[], d69 = Float64[], d70 = Float64[], d71 = Float64[], d72 = Float64[],
+                    d73 = Float64[], d74 = Float64[], d75 = Float64[], d76 = Float64[], d77 = Float64[], d78 = Float64[], d79 = Float64[], d80 = Float64[], d81 = Float64[])
+alpha = 1/5000000
+for i in 1:81
+  new = Float64[]
+  for j in 1:81
+    push!(new, exp(-alpha*sum((Xd[:,i]-Xd[:,j]).^2)))
+  end
+  push!(smoothd, new)
+end
+smoothd
+Xd = DataFrame(Xd)
+
+writetable("Xd_pca.csv", Xd)
+writetable("Xd_pca_ls.csv", smoothd)
+
+obst = observations(t_sd[2:length(t_sd[1,:])])
+glrmt = GLRM(t_sd[2:length(t_sd[1,:])], QuadLoss(), ZeroReg(), ZeroReg(), 52, obs=obst)
+Xt,Yt,cht = fit!(glrmt)
+smootht = DataFrame(t2 = Float64[], t3 = Float64[], t4 = Float64[], t5 = Float64[], t6 = Float64[], t7 = Float64[], t8 = Float64[], t9 = Float64[],
+                    t10 = Float64[], t11 = Float64[], t12 = Float64[], t13 = Float64[], t14 = Float64[], t15 = Float64[], t16 = Float64[], t17 = Float64[], t18 = Float64[],
+                    t19 = Float64[], t20 = Float64[], t21 = Float64[], t22 = Float64[], t23 = Float64[], t24 = Float64[], t25 = Float64[], t26 = Float64[], t27 = Float64[],
+                    t28 = Float64[], t29 = Float64[], t30 = Float64[], t31 = Float64[], t32 = Float64[], t33 = Float64[], t34 = Float64[], t35 = Float64[], t36 = Float64[],
+                    t37 = Float64[], t38 = Float64[], t39 = Float64[], t40 = Float64[], t41 = Float64[], t42 = Float64[], t43 = Float64[], t44 = Float64[], t45 = Float64[],
+                    t46 = Float64[], t47 = Float64[], t48 = Float64[], t49 = Float64[], t50 = Float64[], t51 = Float64[], t52 = Float64[], t53 = Float64[])
+alpha = 1/500000
+for i in 1:52
+  new = Float64[]
+  for j in 1:52
+    push!(new, exp(-alpha*sum((Xt[:,i]-Xt[:,j]).^2)))
+  end
+  push!(smootht, new)
+end
+smootht
+Xt = DataFrame(Xt)
+
+writetable("Xt_pca.csv",Xt)
+writetable("Xt_pca_ls.csv", smootht)
+
+#linear regression on pca with local smoothing
+train_x_ls = readtable("train_pca_ls.csv")
+X_ls = [train_x_ls[:isholiday].data train_x_ls[:temperature].data train_x_ls[:temperature].data.^2 train_x_ls[:temperature].data.^3 train_x_ls[:fuel_price].data train_x_ls[:fuel_price].data.^2 train_x_ls[:fuel_price].data.^3 train_x_ls[:cpi].data train_x_ls[:cpi].data.^2 train_x_ls[:cpi].data.^3 train_x_ls[:unemployment].data train_x_ls[:unemployment].data.^2 train_x_ls[:unemployment].data.^3 convert(Array, train_x_ls[20:197]) ones(length(train_x_ls[:weekly_sales]))]
+y_ls = train_x_ls[:weekly_sales].data
+w_ls = X_ls\y_ls
+
+val_x_ls = readtable("val_pca_ls.csv")
+
+X_val_ls = [val_x_ls[:isholiday].data val_x_ls[:temperature].data val_x_ls[:temperature].data.^2 val_x_ls[:temperature].data.^3 val_x_ls[:fuel_price].data val_x_ls[:fuel_price].data.^2 val_x_ls[:fuel_price].data.^3 val_x_ls[:cpi].data val_x_ls[:cpi].data.^2 val_x_ls[:cpi].data.^3 val_x_ls[:unemployment].data val_x_ls[:unemployment].data.^2 val_x_ls[:unemployment].data.^3 convert(Array, val_x_ls[20:197]) ones(length(val_x_ls[:weekly_sales]))]
+val_x_ls[:pred] = X_val_ls*w_ls
+
+sum_pcals = 0
+denom_pcals = 0
+for i in 1:length(val_x_ls[:pred])
+  if val_x_ls[i,:isholiday] == true
+    sum_pcals = sum_pcals + 5*abs(val_x_ls[i,:pred] - val_x_ls[i,:weekly_sales])
+    denom_pcals = denom_pcals + 5
+  else
+    sum_pcals = sum_pcals + abs(val_x_ls[i,:pred] - val_x_ls[i,:weekly_sales])
+    denom_pcals = denom_pcals + 1
+  end
+end
+WMAE_pcals = sum_pcals/denom_pcals
+
+
+#linear regression on pca without local smoothing
+train_x = readtable("train_pca.csv")
+X = [train_x[:isholiday].data train_x[:temperature].data train_x[:temperature].data.^2 train_x[:temperature].data.^3 train_x[:fuel_price].data train_x[:fuel_price].data.^2 train_x[:fuel_price].data.^3 train_x[:cpi].data train_x[:cpi].data.^2 train_x[:cpi].data.^3 train_x[:unemployment].data train_x[:unemployment].data.^2 train_x[:unemployment].data.^3 convert(Array, train_x[20:197]) ones(length(train_x[:weekly_sales]))]
+y = train_x[:weekly_sales].data
+w = X\y
+
+val_x = readtable("val_pca.csv")
+
+X_val = X_val_ls = [val_x[:isholiday].data val_x[:temperature].data val_x[:temperature].data.^2 val_x[:temperature].data.^3 val_x[:fuel_price].data val_x[:fuel_price].data.^2 val_x[:fuel_price].data.^3 val_x[:cpi].data val_x[:cpi].data.^2 val_x[:cpi].data.^3 val_x[:unemployment].data val_x[:unemployment].data.^2 val_x[:unemployment].data.^3 convert(Array, val_x[20:197]) ones(length(val_x[:weekly_sales]))]
+val_x[:pred] = X_val*w
+
+sum_pca = 0
+denom_pca = 0
+for i in 1:length(val_x[:pred])
+  if val_x[i,:isholiday] == true
+    sum_pca = sum_pca + 5*abs(val_x[i,:pred] - val_x[i,:weekly_sales])
+    denom_pca = denom_pca + 5
+  else
+    sum_pca = sum_pca + abs(val_x[i,:pred] - val_x[i,:weekly_sales])
+    denom_pca = denom_pca + 1
+  end
+end
+WMAE_pca = sum_pca/denom_pca
+
+#sparse pca
+obss1 = observations(s_dt[2:length(s_dt[1,:])])
+glrms1 = GLRM(s_dt[2:length(s_dt[1,:])], QuadLoss(), OneReg(), OneReg(), 45, obs=obss1)
+Xs1,Ys1,chs1 = fit!(glrms1)
+smooths1 = DataFrame(s1 = Float64[], s2 = Float64[], s3 = Float64[], s4 = Float64[], s5 = Float64[], s6 = Float64[], s7 = Float64[], s8 = Float64[], s9 = Float64[],
+                    s10 = Float64[], s11 = Float64[], s12 = Float64[], s13 = Float64[], s14 = Float64[], s15 = Float64[], s16 = Float64[], s17 = Float64[], s18 = Float64[],
+                    s19 = Float64[], s20 = Float64[], s21 = Float64[], s22 = Float64[], s23 = Float64[], s24 = Float64[], s25 = Float64[], s26 = Float64[], s27 = Float64[],
+                    s28 = Float64[], s29 = Float64[], s30 = Float64[], s31 = Float64[], s32 = Float64[], s33 = Float64[], s34 = Float64[], s35 = Float64[], s36 = Float64[],
+                    s37 = Float64[], s38 = Float64[], s39 = Float64[], s40 = Float64[], s41 = Float64[], s42 = Float64[], s43 = Float64[], s44 = Float64[], s45 = Float64[])
+alpha = 1/1000000
+for i in 1:45
+  new = Float64[]
+  for j in 1:45
+    push!(new, exp(-alpha*sum((Xs1[:,i]-Xs1[:,j]).^2)))
+  end
+  push!(smooths1, new)
+end
+smooths1
+Xs1 = DataFrame(Xs1)
+
+writetable("Xs_spca.csv", Xs1)
+writetable("Xs_spca_ls.csv", smooths1)
+
+obsd1 = observations(d_st[2:length(d_st[1,:])])
+glrmd1 = GLRM(d_st[2:length(d_st[1,:])], QuadLoss(), OneReg(), OneReg(), 81, obs=obsd1)
+Xd1,Yd1,chd1 = fit!(glrmd1)
+smoothd1 = DataFrame(d1 = Float64[], d2 = Float64[], d3 = Float64[], d4 = Float64[], d5 = Float64[], d6 = Float64[], d7 = Float64[], d8 = Float64[], d9 = Float64[],
+                    d10 = Float64[], d11 = Float64[], d12 = Float64[], d13 = Float64[], d14 = Float64[], d15 = Float64[], d16 = Float64[], d17 = Float64[], d18 = Float64[],
+                    d19 = Float64[], d20 = Float64[], d21 = Float64[], d22 = Float64[], d23 = Float64[], d24 = Float64[], d25 = Float64[], d26 = Float64[], d27 = Float64[],
+                    d28 = Float64[], d29 = Float64[], d30 = Float64[], d31 = Float64[], d32 = Float64[], d33 = Float64[], d34 = Float64[], d35 = Float64[], d36 = Float64[],
+                    d37 = Float64[], d38 = Float64[], d39 = Float64[], d40 = Float64[], d41 = Float64[], d42 = Float64[], d43 = Float64[], d44 = Float64[], d45 = Float64[],
+                    d46 = Float64[], d47 = Float64[], d48 = Float64[], d49 = Float64[], d50 = Float64[], d51 = Float64[], d52 = Float64[], d53 = Float64[], d54 = Float64[],
+                    d55 = Float64[], d56 = Float64[], d57 = Float64[], d58 = Float64[], d59 = Float64[], d60 = Float64[], d61 = Float64[], d62 = Float64[], d63 = Float64[],
+                    d64 = Float64[], d65 = Float64[], d66 = Float64[], d67 = Float64[], d68 = Float64[], d69 = Float64[], d70 = Float64[], d71 = Float64[], d72 = Float64[],
+                    d73 = Float64[], d74 = Float64[], d75 = Float64[], d76 = Float64[], d77 = Float64[], d78 = Float64[], d79 = Float64[], d80 = Float64[], d81 = Float64[])
+alpha = 1/5000000
+for i in 1:81
+  new = Float64[]
+  for j in 1:81
+    push!(new, exp(-alpha*sum((Xd1[:,i]-Xd1[:,j]).^2)))
+  end
+  push!(smoothd1, new)
+end
+smoothd1
+Xd1 = DataFrame(Xd1)
+
+writetable("Xd_spca.csv", Xd1)
+writetable("Xd_spca_ls.csv", smoothd1)
+
+obst1 = observations(t_sd[2:length(t_sd[1,:])])
+glrmt1 = GLRM(t_sd[2:length(t_sd[1,:])], QuadLoss(), OneReg(), OneReg(), 52, obs=obst1)
+Xt1,Yt1,cht1 = fit!(glrmt1)
+smootht1 = DataFrame(t2 = Float64[], t3 = Float64[], t4 = Float64[], t5 = Float64[], t6 = Float64[], t7 = Float64[], t8 = Float64[], t9 = Float64[],
+                    t10 = Float64[], t11 = Float64[], t12 = Float64[], t13 = Float64[], t14 = Float64[], t15 = Float64[], t16 = Float64[], t17 = Float64[], t18 = Float64[],
+                    t19 = Float64[], t20 = Float64[], t21 = Float64[], t22 = Float64[], t23 = Float64[], t24 = Float64[], t25 = Float64[], t26 = Float64[], t27 = Float64[],
+                    t28 = Float64[], t29 = Float64[], t30 = Float64[], t31 = Float64[], t32 = Float64[], t33 = Float64[], t34 = Float64[], t35 = Float64[], t36 = Float64[],
+                    t37 = Float64[], t38 = Float64[], t39 = Float64[], t40 = Float64[], t41 = Float64[], t42 = Float64[], t43 = Float64[], t44 = Float64[], t45 = Float64[],
+                    t46 = Float64[], t47 = Float64[], t48 = Float64[], t49 = Float64[], t50 = Float64[], t51 = Float64[], t52 = Float64[], t53 = Float64[])
+alpha = 1/500000
+for i in 1:52
+  new = Float64[]
+  for j in 1:52
+    push!(new, exp(-alpha*sum((Xt1[:,i]-Xt1[:,j]).^2)))
+  end
+  push!(smootht1, new)
+end
+smootht1
+Xt1 = DataFrame(Xt1)
+
+writetable("Xt_spca.csv",Xt1)
+writetable("Xt_spca_ls.csv", smootht1)
+
+#linear regression on spca with local smoothing
+train_x_ls1 = readtable("train_spca_ls.csv")
+X_ls1 = [train_x_ls1[:isholiday].data train_x_ls1[:temperature].data train_x_ls1[:temperature].data.^2 train_x_ls1[:temperature].data.^3 train_x_ls1[:fuel_price].data train_x_ls1[:fuel_price].data.^2 train_x_ls1[:fuel_price].data.^3 train_x_ls1[:cpi].data train_x_ls1[:cpi].data.^2 train_x_ls1[:cpi].data.^3 train_x_ls1[:unemployment].data train_x_ls1[:unemployment].data.^2 train_x_ls1[:unemployment].data.^3 convert(Array, train_x_ls1[20:197]) ones(length(train_x_ls1[:weekly_sales]))]
+y_ls1 = train_x_ls1[:weekly_sales].data
+w_ls1 = X_ls1\y_ls1
+
+val_x_ls1 = readtable("val_spca_ls.csv")
+
+X_val_ls1 = [val_x_ls1[:isholiday].data val_x_ls1[:temperature].data val_x_ls1[:temperature].data.^2 val_x_ls1[:temperature].data.^3 val_x_ls1[:fuel_price].data val_x_ls1[:fuel_price].data.^2 val_x_ls1[:fuel_price].data.^3 val_x_ls1[:cpi].data val_x_ls1[:cpi].data.^2 val_x_ls1[:cpi].data.^3 val_x_ls1[:unemployment].data val_x_ls1[:unemployment].data.^2 val_x_ls1[:unemployment].data.^3 convert(Array, val_x_ls1[20:197]) ones(length(val_x_ls1[:weekly_sales]))]
+val_x_ls1[:pred] = X_val_ls1*w_ls1
+
+sum_spcals = 0
+denom_spcals = 0
+for i in 1:length(val_x_ls1[:pred])
+  if val_x_ls1[i,:isholiday] == true
+    sum_spcals = sum_spcals + 5*abs(val_x_ls1[i,:pred] - val_x_ls1[i,:weekly_sales])
+    denom_spcals = denom_spcals + 5
+  else
+    sum_spcals = sum_spcals + abs(val_x_ls1[i,:pred] - val_x_ls1[i,:weekly_sales])
+    denom_spcals = denom_spcals + 1
+  end
+end
+WMAE_spcals = sum_spcals/denom_spcals
+
+
+#linear regression on spca without local smoothing
+train_x1 = readtable("train_spca.csv")
+X1 = [train_x1[:isholiday].data train_x1[:temperature].data train_x1[:temperature].data.^2 train_x1[:temperature].data.^3 train_x1[:fuel_price].data train_x1[:fuel_price].data.^2 train_x1[:fuel_price].data.^3 train_x1[:cpi].data train_x1[:cpi].data.^2 train_x1[:cpi].data.^3 train_x1[:unemployment].data train_x1[:unemployment].data.^2 train_x1[:unemployment].data.^3 convert(Array, train_x1[20:197]) ones(length(train_x1[:weekly_sales]))]
+y1 = train_x1[:weekly_sales].data
+w1 = X1\y1
+
+val_x1 = readtable("val_spca.csv")
+
+X_val1 = [val_x1[:isholiday].data val_x1[:temperature].data val_x1[:temperature].data.^2 val_x1[:temperature].data.^3 val_x1[:fuel_price].data val_x1[:fuel_price].data.^2 val_x1[:fuel_price].data.^3 val_x1[:cpi].data val_x1[:cpi].data.^2 val_x1[:cpi].data.^3 val_x1[:unemployment].data val_x1[:unemployment].data.^2 val_x1[:unemployment].data.^3 convert(Array, val_x1[20:197]) ones(length(val_x1[:weekly_sales]))]
+val_x1[:pred] = X_val1*w1
+
+sum_spca = 0
+denom_spca = 0
+for i in 1:length(val_x1[:pred])
+  if val_x1[i,:isholiday] == true
+    sum_spca = sum_spca + 5*abs(val_x1[i,:pred] - val_x1[i,:weekly_sales])
+    denom_spca = denom_spca + 5
+  else
+    sum_spca = sum_spca + abs(val_x1[i,:pred] - val_x1[i,:weekly_sales])
+    denom_spca = denom_spca + 1
+  end
+end
+WMAE_spca = sum_spca/denom_spca
+
+
+#matrix completion
+obss2 = observations(s_dt[2:length(s_dt[1,:])])
+glrms2 = GLRM(s_dt[2:length(s_dt[1,:])], QuadLoss(), QuadReg(), QuadReg(), 45, obs=obss2)
+Xs2,Ys2,chs2 = fit!(glrms2)
+smooths2 = DataFrame(s1 = Float64[], s2 = Float64[], s3 = Float64[], s4 = Float64[], s5 = Float64[], s6 = Float64[], s7 = Float64[], s8 = Float64[], s9 = Float64[],
+                    s10 = Float64[], s11 = Float64[], s12 = Float64[], s13 = Float64[], s14 = Float64[], s15 = Float64[], s16 = Float64[], s17 = Float64[], s18 = Float64[],
+                    s19 = Float64[], s20 = Float64[], s21 = Float64[], s22 = Float64[], s23 = Float64[], s24 = Float64[], s25 = Float64[], s26 = Float64[], s27 = Float64[],
+                    s28 = Float64[], s29 = Float64[], s30 = Float64[], s31 = Float64[], s32 = Float64[], s33 = Float64[], s34 = Float64[], s35 = Float64[], s36 = Float64[],
+                    s37 = Float64[], s38 = Float64[], s39 = Float64[], s40 = Float64[], s41 = Float64[], s42 = Float64[], s43 = Float64[], s44 = Float64[], s45 = Float64[])
+alpha = 1/1000000
+for i in 1:45
+  new = Float64[]
+  for j in 1:45
+    push!(new, exp(-alpha*sum((Xs2[:,i]-Xs2[:,j]).^2)))
+  end
+  push!(smooths2, new)
+end
+smooths2
+Xs2 = DataFrame(Xs2)
+
+writetable("Xs_mc.csv", Xs2)
+writetable("Xs_mc_ls.csv", smooths2)
+
+obsd2 = observations(d_st[2:length(d_st[1,:])])
+glrmd2 = GLRM(d_st[2:length(d_st[1,:])], QuadLoss(), QuadReg(), QuadReg(), 81, obs=obsd2)
+Xd2,Yd2,chd2 = fit!(glrmd2)
+smoothd2 = DataFrame(d1 = Float64[], d2 = Float64[], d3 = Float64[], d4 = Float64[], d5 = Float64[], d6 = Float64[], d7 = Float64[], d8 = Float64[], d9 = Float64[],
+                    d10 = Float64[], d11 = Float64[], d12 = Float64[], d13 = Float64[], d14 = Float64[], d15 = Float64[], d16 = Float64[], d17 = Float64[], d18 = Float64[],
+                    d19 = Float64[], d20 = Float64[], d21 = Float64[], d22 = Float64[], d23 = Float64[], d24 = Float64[], d25 = Float64[], d26 = Float64[], d27 = Float64[],
+                    d28 = Float64[], d29 = Float64[], d30 = Float64[], d31 = Float64[], d32 = Float64[], d33 = Float64[], d34 = Float64[], d35 = Float64[], d36 = Float64[],
+                    d37 = Float64[], d38 = Float64[], d39 = Float64[], d40 = Float64[], d41 = Float64[], d42 = Float64[], d43 = Float64[], d44 = Float64[], d45 = Float64[],
+                    d46 = Float64[], d47 = Float64[], d48 = Float64[], d49 = Float64[], d50 = Float64[], d51 = Float64[], d52 = Float64[], d53 = Float64[], d54 = Float64[],
+                    d55 = Float64[], d56 = Float64[], d57 = Float64[], d58 = Float64[], d59 = Float64[], d60 = Float64[], d61 = Float64[], d62 = Float64[], d63 = Float64[],
+                    d64 = Float64[], d65 = Float64[], d66 = Float64[], d67 = Float64[], d68 = Float64[], d69 = Float64[], d70 = Float64[], d71 = Float64[], d72 = Float64[],
+                    d73 = Float64[], d74 = Float64[], d75 = Float64[], d76 = Float64[], d77 = Float64[], d78 = Float64[], d79 = Float64[], d80 = Float64[], d81 = Float64[])
+alpha = 1/5000000
+for i in 1:81
+  new = Float64[]
+  for j in 1:81
+    push!(new, exp(-alpha*sum((Xd2[:,i]-Xd2[:,j]).^2)))
+  end
+  push!(smoothd2, new)
+end
+smoothd2
+Xd2 = DataFrame(Xd2)
+
+writetable("Xd_mc.csv", Xd2)
+writetable("Xd_mc_ls.csv", smoothd2)
+
+obst2 = observations(t_sd[2:length(t_sd[1,:])])
+glrmt2 = GLRM(t_sd[2:length(t_sd[1,:])], QuadLoss(), QuadReg(), QuadReg(), 52, obs=obst2)
+Xt2,Yt2,cht2 = fit!(glrmt2)
+smootht2 = DataFrame(t2 = Float64[], t3 = Float64[], t4 = Float64[], t5 = Float64[], t6 = Float64[], t7 = Float64[], t8 = Float64[], t9 = Float64[],
+                    t10 = Float64[], t11 = Float64[], t12 = Float64[], t13 = Float64[], t14 = Float64[], t15 = Float64[], t16 = Float64[], t17 = Float64[], t18 = Float64[],
+                    t19 = Float64[], t20 = Float64[], t21 = Float64[], t22 = Float64[], t23 = Float64[], t24 = Float64[], t25 = Float64[], t26 = Float64[], t27 = Float64[],
+                    t28 = Float64[], t29 = Float64[], t30 = Float64[], t31 = Float64[], t32 = Float64[], t33 = Float64[], t34 = Float64[], t35 = Float64[], t36 = Float64[],
+                    t37 = Float64[], t38 = Float64[], t39 = Float64[], t40 = Float64[], t41 = Float64[], t42 = Float64[], t43 = Float64[], t44 = Float64[], t45 = Float64[],
+                    t46 = Float64[], t47 = Float64[], t48 = Float64[], t49 = Float64[], t50 = Float64[], t51 = Float64[], t52 = Float64[], t53 = Float64[])
+alpha = 1/500000
+for i in 1:52
+  new = Float64[]
+  for j in 1:52
+    push!(new, exp(-alpha*sum((Xt2[:,i]-Xt2[:,j]).^2)))
+  end
+  push!(smootht2, new)
+end
+smootht2
+Xt2 = DataFrame(Xt2)
+
+writetable("Xt_mc.csv",Xt2)
+writetable("Xt_mc_ls.csv", smootht2)
+
+#linear regression on matrix completion with local smoothing
+train_x_ls2 = readtable("train_mc_ls.csv")
+X_ls2 = [train_x_ls2[:isholiday].data train_x_ls2[:temperature].data train_x_ls2[:temperature].data.^2 train_x_ls2[:temperature].data.^3 train_x_ls2[:fuel_price].data train_x_ls2[:fuel_price].data.^2 train_x_ls2[:fuel_price].data.^3 train_x_ls2[:cpi].data train_x_ls2[:cpi].data.^2 train_x_ls2[:cpi].data.^3 train_x_ls2[:unemployment].data train_x_ls2[:unemployment].data.^2 train_x_ls2[:unemployment].data.^3 convert(Array, train_x_ls2[20:197]) ones(length(train_x_ls2[:weekly_sales]))]
+y_ls2 = train_x_ls2[:weekly_sales].data
+w_ls2 = X_ls2\y_ls2
+
+val_x_ls2 = readtable("val_mc_ls.csv")
+
+X_val_ls2 = [val_x_ls2[:isholiday].data val_x_ls2[:temperature].data val_x_ls2[:temperature].data.^2 val_x_ls2[:temperature].data.^3 val_x_ls2[:fuel_price].data val_x_ls2[:fuel_price].data.^2 val_x_ls2[:fuel_price].data.^3 val_x_ls2[:cpi].data val_x_ls2[:cpi].data.^2 val_x_ls2[:cpi].data.^3 val_x_ls2[:unemployment].data val_x_ls2[:unemployment].data.^2 val_x_ls2[:unemployment].data.^3 convert(Array, val_x_ls2[20:197]) ones(length(val_x_ls2[:weekly_sales]))]
+val_x_ls2[:pred] = X_val_ls2*w_ls2
+
+sum_mcls = 0
+denom_mcls = 0
+for i in 1:length(val_x_ls2[:pred])
+  if val_x_ls2[i,:isholiday] == true
+    sum_mcls = sum_mcls + 5*abs(val_x_ls2[i,:pred] - val_x_ls2[i,:weekly_sales])
+    denom_mcls = denom_mcls + 5
+  else
+    sum_mcls = sum_mcls + abs(val_x_ls2[i,:pred] - val_x_ls2[i,:weekly_sales])
+    denom_mcls = denom_mcls + 1
+  end
+end
+WMAE_mcls = sum_mcls/denom_mcls
+
+
+#linear regression on matrix completion without local smoothing
+train_x2 = readtable("train_mc.csv")
+X2 = [train_x2[:isholiday].data train_x2[:temperature].data train_x2[:temperature].data.^2 train_x2[:temperature].data.^3 train_x2[:fuel_price].data train_x2[:fuel_price].data.^2 train_x2[:fuel_price].data.^3 train_x2[:cpi].data train_x2[:cpi].data.^2 train_x2[:cpi].data.^3 train_x2[:unemployment].data train_x2[:unemployment].data.^2 train_x2[:unemployment].data.^3 convert(Array, train_x2[20:197]) ones(length(train_x2[:weekly_sales]))]
+y2 = train_x2[:weekly_sales].data
+w2 = X2\y2
+
+val_x2 = readtable("val_mc.csv")
+
+X_val2 = [val_x2[:isholiday].data val_x2[:temperature].data val_x2[:temperature].data.^2 val_x2[:temperature].data.^3 val_x2[:fuel_price].data val_x2[:fuel_price].data.^2 val_x2[:fuel_price].data.^3 val_x2[:cpi].data val_x2[:cpi].data.^2 val_x2[:cpi].data.^3 val_x2[:unemployment].data val_x2[:unemployment].data.^2 val_x2[:unemployment].data.^3 convert(Array, val_x2[20:197]) ones(length(val_x2[:weekly_sales]))]
+val_x2[:pred] = X_val2*w2
+
+sum_mc = 0
+denom_mc = 0
+for i in 1:length(val_x2[:pred])
+  if val_x2[i,:isholiday] == true
+    sum_mc = sum_mc + 5*abs(val_x2[i,:pred] - val_x2[i,:weekly_sales])
+    denom_mc = denom_mc + 5
+  else
+    sum_mc = sum_mc + abs(val_x2[i,:pred] - val_x2[i,:weekly_sales])
+    denom_mc = denom_mc + 1
+  end
+end
+WMAE_mc = sum_mc/denom_mc
+
+test_pca_ls = readtable("test_pca_ls.csv")
+X_test_pca_ls = [test_pca_ls[:isholiday].data test_pca_ls[:temperature].data test_pca_ls[:temperature].data.^2 test_pca_ls[:temperature].data.^3 test_pca_ls[:fuel_price].data test_pca_ls[:fuel_price].data.^2 test_pca_ls[:fuel_price].data.^3 test_pca_ls[:cpi].data test_pca_ls[:cpi].data.^2 test_pca_ls[:cpi].data.^3 test_pca_ls[:unemployment].data test_pca_ls[:unemployment].data.^2 test_pca_ls[:unemployment].data.^3 convert(Array, test_pca_ls[19:196]) ones(length(test_pca_ls[1]))]
+test_pca_ls[:Weekly_Sales] = X_test_pca_ls*w_ls
+writetable("submission.csv", test_pca_ls)
